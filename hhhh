@@ -1,0 +1,89 @@
+from tkinter import *
+
+# Fungsi tombol klik untuk menambahkan ekspresi
+def tombol_klik(item):
+    global ekspresi
+    ekspresi = ekspresi + str(item)
+    input_text.set(ekspresi)
+
+# Fungsi untuk menghapus input (Clear)
+def tombol_clear():
+    global ekspresi
+    ekspresi = ""
+    input_text.set("0")
+
+# Fungsi untuk menghitung hasil ekspresi
+def tombol_samadengan():
+    try:
+        global ekspresi
+        hasil = str(eval(ekspresi))  # Menghitung hasil ekspresi
+        input_text.set(hasil)
+        ekspresi = hasil
+    except:
+        input_text.set("Error")
+        ekspresi = ""
+
+# Inisialisasi Tkinter
+window = Tk()
+window.title("Kalkulator")
+window.geometry("360x600")
+window.resizable(0, 0)
+
+# Warna dan ukuran
+bg_color = "#2c2f33"
+operator_color = "#ff9500"
+num_color = "#505050"
+text_color = "#ffffff"
+
+# Variabel ekspresi dan input text
+ekspresi = ""
+input_text = StringVar()
+input_text.set("0")
+
+# Label tampilan input
+input_label = Label(window, textvariable=input_text, font=("Arial", 32), bg=bg_color, fg=text_color, anchor='e', padx=24)
+input_label.pack(expand=True, fill=BOTH)
+
+# Frame untuk tombol
+frame = Frame(window, bg=bg_color)
+frame.pack(expand=True, fill=BOTH)
+
+# Tombol-tombol kalkulator
+buttons = [
+    ["AC", "+/-", "%", "/"],
+    ["7", "8", "9", "*"],
+    ["4", "5", "6", "-"],
+    ["1", "2", "3", "+"],
+    ["0", ",", "="]
+]
+
+# Membuat tombol dan menempatkannya di grid
+for i, row in enumerate(buttons):
+    for j, text in enumerate(row):
+        if text == "AC":
+            btn = Button(frame, text=text, bg=num_color, fg=text_color, font=("Arial", 18), command=tombol_clear)
+        elif text == "=":
+            btn = Button(frame, text=text, bg=operator_color, fg=text_color, font=("Arial", 18), command=tombol_samadengan)
+            btn.grid(row=i, column=3, sticky="nsew", padx=2, pady=2)  # Letakkan tombol "=" pada kolom paling kanan
+        else:
+            btn = Button(frame, text=text, bg=operator_color if j == 3 else num_color, fg=text_color, font=("Arial", 18),
+                         command=lambda txt=text: tombol_klik(txt if txt != "," else "."))
+        
+        # Konfigurasi tombol "0" agar memenuhi dua kolom di sisi kiri, dan tombol "," tepat di sampingnya
+        if text == "0":
+            btn.grid(row=i, column=j, columnspan=2, sticky="nsew", padx=2, pady=2)
+            j += 1
+        elif text == ",":
+            btn.grid(row=i, column=2, sticky="nsew", padx=2, pady=2)
+        elif text != "=":  # Untuk semua tombol selain "="
+            btn.grid(row=i, column=j, sticky="nsew", padx=2, pady=2)
+
+# Menetapkan ukuran setiap baris dan kolom agar proporsional
+for i in range(5):
+    frame.grid_rowconfigure(i, weight=1)
+for j in range(4):
+    frame.grid_columnconfigure(j, weight=1)
+
+# Pengaturan latar belakang jendela utama dan menjalankan aplikasi
+window.config(bg=bg_color)
+window.mainloop()
